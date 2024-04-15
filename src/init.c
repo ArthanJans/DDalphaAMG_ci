@@ -169,8 +169,13 @@ void method_setup( vector_double *V, level_struct *l, struct Thread *threading )
 #ifdef INIT_ONE_PREC
     } else {
 #endif
+      //printf0("we're here!\n");
+      //exit(0);
+      //fgmres_double_struct_alloc( g.restart, g.max_restart, l->inner_vector_size, g.tol,
+      //                            _GLOBAL_FGMRES, _RIGHT, preconditioner,
+      //                            g.method==6?g5D_plus_clover_double:d_plus_clover_double, &(g.p), l );
       fgmres_double_struct_alloc( g.restart, g.max_restart, l->inner_vector_size, g.tol,
-                                  _GLOBAL_FGMRES, _RIGHT, preconditioner,
+                                  _GLOBAL_FGMRES, _NOTHING, NULL,
                                   g.method==6?g5D_plus_clover_double:d_plus_clover_double, &(g.p), l );
     }
 #ifdef INIT_ONE_PREC
