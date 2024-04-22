@@ -547,6 +547,48 @@ void solve_driver( level_struct *l, struct Thread *threading ) {
   g.avg_crst = 0.0;
   END_MASTER(threading)
 
+  START_MASTER(threading)
+  printf0("Let's do a coarsest-level solve ...\n");
+  END_MASTER(threading)
+
+  // l is an instance (pointer) of level_struct at the finest level, l->next_level
+  // is (a pointer to) the same struct at the next level. Let's access the coarsest-level
+  // level_struct pointer-instance
+  int i;
+  level_struct *lx = l;
+  for ( i=0;i<g.num_levels-1;i++ ) {
+    lx = lx->next_level;
+  }
+  //printf0("level = %d\n",lx->depth);
+
+  if ( g.mixed_precision==0 ) {
+    fgmres_double( &(lx->p_double), lx, threading );
+  }
+  else {
+    fgmres_float( &(lx->p_float), lx, threading );
+  }
+
+  if ( g.mixed_precision==0 ) { error0("only mixed_precision>0 allowed atm\n"); }
+
+  gmres_float_struct *px = &(lx->p_float);
+  vector_float v1 = px->w;
+  apply_operator_float( v1, px->x, px, lx, threading );
+  int start,end;
+  compute_core_start_end( px->v_start, px->v_end, &start, &end, lx, threading );
+  vector_float_minus( px->r, px->b, v1, start, end, lx );
+  double normn,normd;
+  normn = global_norm_float( px->r, px->v_start, px->v_end, lx, threading );
+  normd = global_norm_float( px->b, px->v_start, px->v_end, lx, threading );
+  START_MASTER(threading)
+  printf0("relative residual = %e\n",normn/normd);
+  END_MASTER(threading)
+
+  START_MASTER(threading)
+  printf0("... done\n");
+  MPI_Finalize();
+  END_MASTER(threading)
+  SYNC_CORES(threading)
+  exit(0);
   solve( solution, source, l, threading );
 
   START_MASTER(threading)
