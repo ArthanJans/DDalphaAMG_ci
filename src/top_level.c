@@ -561,12 +561,16 @@ void solve_driver( level_struct *l, struct Thread *threading ) {
   }
   //printf0("level = %d\n",lx->depth);
 
+  int iters_fgmres;
   if ( g.mixed_precision==0 ) {
-    fgmres_double( &(lx->p_double), lx, threading );
+    iters_fgmres = fgmres_double( &(lx->p_double), lx, threading );
   }
   else {
-    fgmres_float( &(lx->p_float), lx, threading );
+    iters_fgmres = fgmres_float( &(lx->p_float), lx, threading );
   }
+  START_MASTER(threading)
+  printf0("iters for preconditioned GMRES to converge = %d\n",iters_fgmres);
+  END_MASTER()
 
   if ( g.mixed_precision==0 ) { error0("only mixed_precision>0 allowed atm\n"); }
 
