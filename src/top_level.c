@@ -561,6 +561,38 @@ void solve_driver( level_struct *l, struct Thread *threading ) {
   }
   //printf0("level = %d\n",lx->depth);
 
+#ifdef POLYPREC
+  int update_lejas;
+  if ( g.mixed_precision==0 ) {
+    update_lejas = lx->p_double.polyprec_double.update_lejas;
+  }
+  else {
+    update_lejas = lx->p_float.polyprec_float.update_lejas;
+  }
+  if ( lx->level==0 && update_lejas==1 ) {
+    // re-construct Lejas
+    if ( g.mixed_precision==0 ) {
+      re_construct_lejas_double( lx, threading );
+    } else {
+      re_construct_lejas_float( lx, threading );
+    }
+  }
+#endif
+
+#ifdef POLYPREC
+  START_MASTER(threading)
+  if ( g.mixed_precision==0 ) {
+    lx->p_double.preconditioner = lx->p_double.polyprec_double.preconditioner;
+  }
+  else {
+    lx->p_float.preconditioner = lx->p_float.polyprec_float.preconditioner;
+  }
+  //p->preconditioner = p->polyprec_PRECISION.preconditioner;
+  END_MASTER(threading)
+
+  SYNC_MASTER_TO_ALL(threading)
+#endif
+
   int iters_fgmres;
   if ( g.mixed_precision==0 ) {
     iters_fgmres = fgmres_double( &(lx->p_double), lx, threading );
