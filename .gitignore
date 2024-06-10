@@ -12,3 +12,6 @@ global_coarsest_mat.mat
 global_coarsest_mat.txt
 local_coarsest_mat.mat
 local_coarsest_mat.txt
+
+.vscode
+.gitignore

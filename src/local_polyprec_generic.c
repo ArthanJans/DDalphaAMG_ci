@@ -62,6 +62,25 @@ void local_fgmres_PRECISION_struct_init( local_gmres_PRECISION_struct *p ) {
   p->polyprec_PRECISION.dirctslvr.x = NULL;
   p->polyprec_PRECISION.dirctslvr.b = NULL;
 #endif
+
+#ifdef DOUBLE_POLYPREC
+  p->double_polyprec_PRECISION.Hcc = NULL; 
+  p->double_polyprec_PRECISION.L = NULL;
+  p->double_polyprec_PRECISION.col_prods = NULL;
+  p->double_polyprec_PRECISION.accum_prod = NULL;
+  p->double_polyprec_PRECISION.product = NULL;
+  p->double_polyprec_PRECISION.temp = NULL;
+  p->double_polyprec_PRECISION.h_ritz = NULL;
+  p->double_polyprec_PRECISION.lejas = NULL;
+  p->double_polyprec_PRECISION.random_rhs = NULL;
+  p->double_polyprec_PRECISION.xtmp = NULL;
+
+  p->double_polyprec_PRECISION.eigslvr.vl = NULL;
+  p->double_polyprec_PRECISION.eigslvr.vr = NULL;
+  p->double_polyprec_PRECISION.dirctslvr.ipiv = NULL;
+  p->double_polyprec_PRECISION.dirctslvr.x = NULL;
+  p->double_polyprec_PRECISION.dirctslvr.b = NULL;
+#endif
 }
 
 void local_fgmres_PRECISION_struct_alloc( int m, int n, long int vl, PRECISION tol, const int type, const int prec_kind,

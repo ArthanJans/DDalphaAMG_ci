@@ -561,31 +561,36 @@ void solve_driver( level_struct *l, struct Thread *threading ) {
   }
   //printf0("level = %d\n",lx->depth);
 
-#ifdef POLYPREC
+#ifdef DOUBLE_POLYPREC
   int update_lejas;
   if ( g.mixed_precision==0 ) {
-    update_lejas = lx->p_double.polyprec_double.update_lejas;
+    update_lejas = lx->p_double.double_polyprec_double.update_lejas;
   }
   else {
-    update_lejas = lx->p_float.polyprec_float.update_lejas;
+    update_lejas = lx->p_float.double_polyprec_float.update_lejas;
   }
   if ( lx->level==0 && update_lejas==1 ) {
     // re-construct Lejas
+    double start_time = MPI_Wtime();
     if ( g.mixed_precision==0 ) {
-      re_construct_lejas_double( lx, threading );
+      re_construct_double_lejas_double( lx, threading );
     } else {
-      re_construct_lejas_float( lx, threading );
+      re_construct_double_lejas_float( lx, threading );
     }
+    double end_time = MPI_Wtime();
+    START_MASTER(threading)
+    printf0("time for construction of polynomial = %lfs\n",end_time-start_time);
+    END_MASTER()
   }
 #endif
 
-#ifdef POLYPREC
+#ifdef DOUBLE_POLYPREC
   START_MASTER(threading)
   if ( g.mixed_precision==0 ) {
-    lx->p_double.preconditioner = lx->p_double.polyprec_double.preconditioner;
+    lx->p_double.preconditioner = lx->p_double.double_polyprec_double.preconditioner;
   }
   else {
-    lx->p_float.preconditioner = lx->p_float.polyprec_float.preconditioner;
+    lx->p_float.preconditioner = lx->p_float.double_polyprec_float.preconditioner;
   }
   //p->preconditioner = p->polyprec_PRECISION.preconditioner;
   END_MASTER(threading)
@@ -594,23 +599,42 @@ void solve_driver( level_struct *l, struct Thread *threading ) {
 #endif
 
   int iters_fgmres;
+  double start_time = MPI_Wtime();
   if ( g.mixed_precision==0 ) {
     iters_fgmres = fgmres_double( &(lx->p_double), lx, threading );
   }
   else {
     iters_fgmres = fgmres_float( &(lx->p_float), lx, threading );
   }
+  double end_time = MPI_Wtime();
   START_MASTER(threading)
   printf0("iters for preconditioned GMRES to converge = %d\n",iters_fgmres);
+  printf0("time for preconditioned GMRES to converge = %lfs\n",end_time-start_time);
   END_MASTER()
 
   if ( g.mixed_precision==0 ) { error0("only mixed_precision>0 allowed atm\n"); }
 
   gmres_float_struct *px = &(lx->p_float);
   vector_float v1 = px->w;
-  apply_operator_float( v1, px->x, px, lx, threading );
+  vector_float v2 = px->r;
   int start,end;
   compute_core_start_end( px->v_start, px->v_end, &start, &end, lx, threading );
+
+  // px->double_polyprec_float.preconditioner( v1, NULL, px->b, _NO_RES, lx, threading );
+  // px->polyprec_float.preconditioner( v2, NULL, v1, _NO_RES, lx, threading );
+  // apply_operator_float( v1, v2, px, lx, threading );
+  // vector_float_minus(v2, v1, px->x, start, end, lx);
+  // double normApAx = global_norm_float( v2, px->v_start, px->v_end, lx, threading );
+  // double normx = global_norm_float( px->b, px->v_start, px->v_end, lx, threading );
+  // START_MASTER(threading)
+  // printf0("relative residual = %e\n",normApAx/normx);
+  // END_MASTER(threading)
+
+
+
+
+
+  apply_operator_float( v1, px->x, px, lx, threading );
   vector_float_minus( px->r, px->b, v1, start, end, lx );
   double normn,normd;
   normn = global_norm_float( px->r, px->v_start, px->v_end, lx, threading );

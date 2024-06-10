@@ -1052,6 +1052,20 @@ void read_solver_parameters( FILE *in, level_struct *l ) {
   g.polyprec_d_solve++;
 #endif
 
+#ifdef DOUBLE_POLYPREC
+  save_pt = &(g.double_polyprec_d); g.double_polyprec_d = 5;
+  read_parameter( &save_pt, "coarse grid double_polyprec_d:", "%d", 1, in, _DEFAULT_SET );
+  g.double_polyprec_d++;
+
+  save_pt = &(g.double_polyprec_d_setup); g.double_polyprec_d_setup = 5;
+  read_parameter( &save_pt, "coarse grid double_polyprec_d_setup:", "%d", 1, in, _DEFAULT_SET );
+  g.double_polyprec_d_setup++;
+
+  save_pt = &(g.double_polyprec_d_solve); g.double_polyprec_d_solve = 5;
+  read_parameter( &save_pt, "coarse grid double_polyprec_d_solve:", "%d", 1, in, _DEFAULT_SET );
+  g.double_polyprec_d_solve++;
+#endif
+
 #ifdef BLOCK_JACOBI
   save_pt = &(g.local_polyprec_d); g.local_polyprec_d = 5;
   read_parameter( &save_pt, "coarse grid local_polyprec_d:", "%d", 1, in, _DEFAULT_SET );

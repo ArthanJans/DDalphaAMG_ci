@@ -105,7 +105,11 @@ int main( int argc, char **argv ) {
             lx->p_double.gcrodr_double.k = g.gcrodr_k_setup;
 #endif
 #ifdef POLYPREC
+//TODO: should this be p_double??
             lx->p_float.polyprec_float.d_poly = g.polyprec_d_setup;
+#endif
+#ifdef DOUBLE_POLYPREC
+            lx->p_double.double_polyprec_double.d_poly = g.double_polyprec_d_setup;
 #endif
           }
           else {
@@ -114,6 +118,9 @@ int main( int argc, char **argv ) {
 #endif
 #ifdef POLYPREC
             lx->p_float.polyprec_float.d_poly = g.polyprec_d_setup;
+#endif
+#ifdef DOUBLE_POLYPREC
+            lx->p_float.double_polyprec_float.d_poly = g.double_polyprec_d_setup;
 #endif
           }
           break;

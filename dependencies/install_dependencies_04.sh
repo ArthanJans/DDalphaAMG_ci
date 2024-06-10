@@ -31,5 +31,7 @@ make -j 4
 make install
 cd ..
 
-#rm -Rf qmp-2.1.7
-#rm qmp-2.1.7.tar.gz
+rm -Rf qmp-2.1.7
+rm qmp-2.1.7.tar.gz
+rm -Rf qio-2.5.0
+rm qio-2.5.0.tar.gz

@@ -362,7 +362,7 @@
     // next coarser level
     struct level_struct *next_level;
 
-#if defined(GCRODR) || defined(POLYPREC)
+#if defined(GCRODR) || defined(POLYPREC) || defined(DOUBLE_POLYPREC)
     // 'bool', if on H will be copied
     int dup_H;
 #endif
@@ -402,6 +402,10 @@
 
 #ifdef POLYPREC
     int polyprec_d, polyprec_d_setup, polyprec_d_solve;
+#endif
+
+#ifdef DOUBLE_POLYPREC
+    int double_polyprec_d, double_polyprec_d_setup, double_polyprec_d_solve;
 #endif
 
 #ifdef BLOCK_JACOBI
@@ -657,6 +661,11 @@
 #ifdef POLYPREC
   #include "polyprec_double.h"
   #include "polyprec_float.h"
+#endif
+
+#ifdef DOUBLE_POLYPREC
+  #include "double_polyprec_double.h"
+  #include "double_polyprec_float.h"
 #endif
 
 #include "sparse_mv_float.h"
