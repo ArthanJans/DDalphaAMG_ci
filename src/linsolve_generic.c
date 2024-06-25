@@ -438,7 +438,7 @@ void fgmres_PRECISION_struct_alloc( int m, int n, long int vl, PRECISION tol, co
   p->double_polyprec_PRECISION.dirctslvr.lda = double_d_poly; // m here !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   p->double_polyprec_PRECISION.dirctslvr.ldb = double_d_poly;
   p->double_polyprec_PRECISION.dirctslvr.nrhs = 1;
-  p->double_polyprec_PRECISION.dirctslvr.Hcc = p->polyprec_PRECISION.Hcc;
+  p->double_polyprec_PRECISION.dirctslvr.Hcc = p->double_polyprec_PRECISION.Hcc;
   p->double_polyprec_PRECISION.dirctslvr.dirctslvr_PRECISION = dirctslvr_PRECISION;
 
   MALLOC( p->double_polyprec_PRECISION.eigslvr.vl, complex_PRECISION, double_d_poly*double_d_poly );
