@@ -565,7 +565,7 @@ void solve_driver( level_struct *l, struct Thread *threading ) {
   int start,end;
   int iters_fgmres;
   double end_time, start_time;
-  double normn,normd;
+  double normn,normd,normApAx,normx;
   gmres_float_struct *px;
   vector_float v1,v2;
 
@@ -611,16 +611,16 @@ void solve_driver( level_struct *l, struct Thread *threading ) {
   v2 = px->r;
 
   compute_core_start_end( px->v_start, px->v_end, &start, &end, lx, threading );
-  // vector_float_define_random( px->x, px->v_start, px->v_end, l );
-  // apply_operator_float( v2, px->x, px, lx, threading );
-  // px->double_polyprec_float.preconditioner( v1, NULL, v2, _NO_RES, lx, threading );
-  // // px->polyprec_float.preconditioner( v1, NULL, v2, _NO_RES, lx, threading );
-  // vector_float_minus(v2, v1, px->x, start, end, lx);
-  // double normApAx = global_norm_float( v2, px->v_start, px->v_end, lx, threading );
-  // double normx = global_norm_float( px->x, px->v_start, px->v_end, lx, threading );
-  // START_MASTER(threading)
-  // printf0("relative residual = %e\n",normApAx/normx);
-  // END_MASTER(threading)
+  vector_float_define_random( px->x, px->v_start, px->v_end, l );
+  apply_operator_float( v2, px->x, px, lx, threading );
+  px->double_polyprec_float.preconditioner( v1, NULL, v2, _NO_RES, lx, threading );
+  // px->polyprec_float.preconditioner( v1, NULL, v2, _NO_RES, lx, threading );
+  vector_float_minus(v2, v1, px->x, start, end, lx);
+  normApAx = global_norm_float( v2, px->v_start, px->v_end, lx, threading );
+  normx = global_norm_float( px->x, px->v_start, px->v_end, lx, threading );
+  START_MASTER(threading)
+  printf0("|| q(A)*(A*v) - v || / || v || = %e\n",normApAx/normx);
+  END_MASTER(threading)
 
   start_time = MPI_Wtime();
   if ( g.mixed_precision==0 ) {
@@ -702,16 +702,16 @@ void solve_driver( level_struct *l, struct Thread *threading ) {
   v2 = px->r;
 
   compute_core_start_end( px->v_start, px->v_end, &start, &end, lx, threading );
-  // vector_float_define_random( px->x, px->v_start, px->v_end, l );
-  // apply_operator_float( v2, px->x, px, lx, threading );
+  vector_float_define_random( px->x, px->v_start, px->v_end, l );
+  apply_operator_float( v2, px->x, px, lx, threading );
   // px->double_polyprec_float.preconditioner( v1, NULL, v2, _NO_RES, lx, threading );
-  // // px->polyprec_float.preconditioner( v1, NULL, v2, _NO_RES, lx, threading );
-  // vector_float_minus(v2, v1, px->x, start, end, lx);
-  // double normApAx = global_norm_float( v2, px->v_start, px->v_end, lx, threading );
-  // double normx = global_norm_float( px->x, px->v_start, px->v_end, lx, threading );
-  // START_MASTER(threading)
-  // printf0("relative residual = %e\n",normApAx/normx);
-  // END_MASTER(threading)
+  px->polyprec_float.preconditioner( v1, NULL, v2, _NO_RES, lx, threading );
+  vector_float_minus(v2, v1, px->x, start, end, lx);
+  normApAx = global_norm_float( v2, px->v_start, px->v_end, lx, threading );
+  normx = global_norm_float( px->x, px->v_start, px->v_end, lx, threading );
+  START_MASTER(threading)
+  printf0("|| q(A)*(A*v) - v || / || v || = %e\n",normApAx/normx);
+  END_MASTER(threading)
 
   start_time = MPI_Wtime();
   if ( g.mixed_precision==0 ) {
